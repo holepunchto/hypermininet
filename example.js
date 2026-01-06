@@ -1,18 +1,15 @@
-const MininetSwarm = require('.')
+const Hypermininet = require('.')
 
 async function main() {
-  const swarm = new MininetSwarm({
+  const swarm = new Hypermininet({
     debug: true,
     mininet: { clean: true },
     network: {
-      s1: {
-        hosts: 10,
-        link: {
-          bandwidth: 1, // use 1mbit link
-          delay: '100ms', // 100ms delay
-          loss: 10, // 10% package loss
-          htb: true // use htb
-        }
+      link: {
+        bandwidth: 1, // use 1mbit link
+        delay: '100ms', // 100ms delay
+        loss: 10, // 10% package loss
+        htb: true // use htb
       }
     }
   })
@@ -31,8 +28,15 @@ async function main() {
     close()
   })
 
-  swarm.run((opts) => {
-    console.log('running!', opts)
+  const helloWorld = swarm.add((opts) => {
+    const Hyperswarm = require('hyperswarm')
+    const swarm = new Hyperswarm({ bootstrap: opts.bootstrap })
+    console.log('running!')
+  })
+
+  swarm.boot(async (opts) => {
+    const controller = helloWorld(swarm.hosts[1], opts)
+    console.log(opts)
   })
 
   setTimeout(() => {
