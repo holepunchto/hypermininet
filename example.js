@@ -41,7 +41,7 @@ async function main() {
   swarm.boot(async () => {
     for (let i = 0; i < swarm.hosts.length; i++) {
       const h = swarm.hosts[i]
-      const proc = helloWorld(h, { hello: i })
+      const _proc = helloWorld(h, { hello: i })
       console.log('from boot')
     }
   })
