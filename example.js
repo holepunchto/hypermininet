@@ -30,7 +30,7 @@ async function main() {
 
   const helloWorld = hypermininet.add(({ data, bootstrap, controller }) => {
     const Hyperswarm = require('hyperswarm')
-    const swarm = new Hyperswarm({ bootstrap })
+    const _swarm = new Hyperswarm({ bootstrap })
     console.log('running!', data)
 
     controller.on('data', () => {
