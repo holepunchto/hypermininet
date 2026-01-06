@@ -19,7 +19,7 @@ class Hypermininet extends ReadyResource {
   }
 
   get hosts() {
-    return this._hosts
+    return this._hosts.slice(1)
   }
 
   async _open() {
@@ -49,7 +49,7 @@ class Hypermininet extends ReadyResource {
   async _close() {
     return new Promise((res) => {
       this._mn.stop(async () => {
-        // await fs.rm(this._dir, { recursive: true })
+        await fs.rm(this._dir, { recursive: true })
 
         res()
       })
@@ -64,9 +64,9 @@ class Hypermininet extends ReadyResource {
   async _bootstrap() {
     this._log('Setting up Bootstrap')
 
-    const run = this.add(async (opts) => {
+    const run = this.add(async ({ data }) => {
       const DHT = require('hyperdht')
-      const node = DHT.bootstrapper(opts.port, '127.0.0.1')
+      const node = DHT.bootstrapper(data.port, '127.0.0.1')
 
       await node.fullyBootstrapped().then(function () {
         const mn = require('mininet/host')
@@ -87,18 +87,18 @@ class Hypermininet extends ReadyResource {
   }
 
   async boot(cb) {
-    const bootstrap = await this._bootstrap()
+    await this._bootstrap()
 
-    const opts = {
-      bootstrap: [{ host: this._hosts[0].ip, port: this._bootstrapOpts.port }]
-    }
-
-    return cb(opts)
+    return cb()
   }
 
   add(cb) {
-    return async (host, opts) => {
+    return async (host, data) => {
       const idx = this._functions++
+      const opts = {
+        data,
+        bootstrap: [{ host: this._hosts[0].ip, port: this._bootstrapOpts.port }]
+      }
       const path = await this._saveCallback(idx, cb, opts)
 
       this._log('spawning', idx, path)
@@ -116,7 +116,9 @@ class Hypermininet extends ReadyResource {
 
   async _saveCallback(name, cb, opts) {
     const sourcePath = path.join(this._dir, name + '.js')
-    const source = `(${cb.toString()})(${JSON.stringify(opts)})`
+    const source = `const controller = require('mininet/host'); (
+${cb.toString()}
+)({controller,...${JSON.stringify(opts)}})`
     await fs.writeFile(sourcePath, source)
 
     return sourcePath

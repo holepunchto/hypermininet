@@ -28,15 +28,22 @@ async function main() {
     close()
   })
 
-  const helloWorld = swarm.add((opts) => {
+  const helloWorld = swarm.add(({ data, bootstrap, controller }) => {
     const Hyperswarm = require('hyperswarm')
-    const swarm = new Hyperswarm({ bootstrap: opts.bootstrap })
-    console.log('running!')
+    const swarm = new Hyperswarm({ bootstrap })
+    console.log('running!', data)
+
+    controller.on('data', () => {
+      console.log('got data', data)
+    })
   })
 
-  swarm.boot(async (opts) => {
-    const controller = helloWorld(swarm.hosts[1], opts)
-    console.log(opts)
+  swarm.boot(async () => {
+    for (let i = 0; i < swarm.hosts.length; i++) {
+      const h = swarm.hosts[i]
+      const proc = helloWorld(h, { hello: i })
+      console.log('from boot')
+    }
   })
 
   setTimeout(() => {
