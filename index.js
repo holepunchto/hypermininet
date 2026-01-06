@@ -26,7 +26,7 @@ class Hypermininet extends ReadyResource {
     const hosts = this._networkConfig.hosts || 10
     const linkOpts = this._networkConfig.link || {}
 
-    this._dir = await tmp(undefined, { dir: 'tmp' })
+    this._dir = await tmp()
     this._switch = this._mn.createSwitch()
 
     this._log('Starting')
