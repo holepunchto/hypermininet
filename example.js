@@ -1,7 +1,7 @@
 const Hypermininet = require('.')
 
 async function main() {
-  const swarm = new Hypermininet({
+  const hypermininet = new Hypermininet({
     debug: true,
     mininet: { clean: true },
     network: {
@@ -13,10 +13,10 @@ async function main() {
       }
     }
   })
-  await swarm.ready()
+  await hypermininet.ready()
 
   async function close() {
-    await swarm.close()
+    await hypermininet.close()
   }
 
   process.on('SIGINT', close)
@@ -28,7 +28,7 @@ async function main() {
     close()
   })
 
-  const helloWorld = swarm.add(({ data, bootstrap, controller }) => {
+  const helloWorld = hypermininet.add(({ data, bootstrap, controller }) => {
     const Hyperswarm = require('hyperswarm')
     const swarm = new Hyperswarm({ bootstrap })
     console.log('running!', data)
@@ -38,16 +38,16 @@ async function main() {
     })
   })
 
-  swarm.boot(async () => {
-    for (let i = 0; i < swarm.hosts.length; i++) {
-      const h = swarm.hosts[i]
+  hypermininet.boot(async () => {
+    for (let i = 0; i < hypermininet.hosts.length; i++) {
+      const h = hypermininet.hosts[i]
       const _proc = helloWorld(h, { hello: i })
       console.log('from boot')
     }
   })
 
   setTimeout(() => {
-    swarm.close()
+    hypermininet.close()
   }, 5000)
 }
 

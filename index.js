@@ -58,7 +58,7 @@ class Hypermininet extends ReadyResource {
 
   _log(...msg) {
     if (!this._debug) return
-    console.log('[swarm]', ...msg)
+    console.log('[hypermininet]', ...msg)
   }
 
   async _bootstrap() {

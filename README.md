@@ -13,7 +13,7 @@ npm install hypermininet
 ```js
 const Hypermininet = require('hypermininet')
 
-const swarm = new Hypermininet({
+const hypermininet = new Hypermininet({
   debug: true,
   mininet: { clean: true },
   network: {
@@ -27,10 +27,10 @@ const swarm = new Hypermininet({
   }
 })
 
-await swarm.ready()
+await hypermininet.ready()
 
 // Define a function to run on hosts
-const helloWorld = swarm.add(({ data, bootstrap, controller }) => {
+const helloWorld = hypermininet.add(({ data, bootstrap, controller }) => {
   const Hyperswarm = require('hyperswarm')
   const swarm = new Hyperswarm({ bootstrap })
 
@@ -41,15 +41,15 @@ const helloWorld = swarm.add(({ data, bootstrap, controller }) => {
   })
 })
 
-// Boot the swarm (starts the DHT bootstrapper)
-await swarm.boot(async () => {
-  for (const host of swarm.hosts) {
+// Boot the hypermininet (starts the DHT bootstrapper)
+await hypermininet.boot(async () => {
+  for (const host of hypermininet.hosts) {
     await helloWorld(host, { hello: 'world' })
   }
 })
 
 // Cleanup
-await swarm.close()
+await hypermininet.close()
 ```
 
 ## API
@@ -73,15 +73,15 @@ Options:
 - `bootstrap` (object): Bootstrap node configuration
   - `port` (number): Port for the DHT bootstrapper. Default: `49737`
 
-### `await swarm.ready()`
+### `await hypermininet.ready()`
 
 Initialize the swarm. Creates the virtual network with the configured number of hosts.
 
-### `swarm.hosts`
+### `hypermininet.hosts`
 
 Array of available hosts (excluding the bootstrap host). Each host has an `ip` property.
 
-### `swarm.add(callback)`
+### `hypermininet.add(callback)`
 
 Register a function to run on hosts. Returns an async function that spawns the callback on a specific host.
 
@@ -92,7 +92,7 @@ The callback receives an object with:
 - `controller`: The `mininet/host` controller for IPC with the parent process
 
 ```js
-const runTask = swarm.add(({ data, bootstrap, controller }) => {
+const runTask = hypermininet.add(({ data, bootstrap, controller }) => {
   // This code runs in a separate Node.js process on the virtual host
   controller.send('done')
 })
@@ -101,17 +101,17 @@ const proc = await runTask(host, { customData: 123 })
 proc.on('message:done', () => console.log('Task completed'))
 ```
 
-### `await swarm.boot(callback)`
+### `await hypermininet.boot(callback)`
 
 Start the DHT bootstrapper and execute the callback. The bootstrapper runs on the first host and is automatically configured.
 
 ```js
-await swarm.boot(async () => {
+await hypermininet.boot(async () => {
   // Bootstrap is ready, spawn your application hosts here
 })
 ```
 
-### `await swarm.close()`
+### `await hypermininet.close()`
 
 Stop all processes and clean up the virtual network.
 

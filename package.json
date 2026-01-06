@@ -1,7 +1,7 @@
 {
-  "name": "@holepunchto/mininetswarm",
-  "version": "1.0.3",
-  "description": "mininetswarm",
+  "name": "@holepunchto/hypermininet",
+  "version": "1.0.0",
+  "description": "hypermininet",
   "main": "index.js",
   "exports": {
     "./package": "./package.json",
@@ -29,14 +29,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/holepunchto/mininetswarm.git"
+    "url": "https://github.com/holepunchto/hypermininet.git"
   },
   "author": "Holepunch Inc",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/holepunchto/mininetswarm/issues"
+    "url": "https://github.com/holepunchto/hypermininet/issues"
   },
-  "homepage": "https://github.com/holepunchto/mininetswarm",
+  "homepage": "https://github.com/holepunchto/hypermininet",
   "dependencies": {
     "hyperdht": "^6.28.0",
     "mininet": "^3.0.0",

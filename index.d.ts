@@ -1,4 +1,4 @@
-declare module '@holepunchto/mininetswarm' {
+declare module '@holepunchto/hypermininet' {
   import { EventEmitter } from 'events'
 
   interface LinkOptions {
@@ -92,7 +92,7 @@ declare module '@holepunchto/mininetswarm' {
     readonly hosts: Hypermininet.Host[]
 
     /**
-     * Initialize the swarm
+     * Initialize the Hypermininet
      * Creates the virtual network with the configured number of hosts
      */
     ready(): Promise<void>
