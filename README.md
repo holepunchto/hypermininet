@@ -1,4 +1,4 @@
-# repo-template
+# mininetswarm
 
 Template repository for creating packages
 

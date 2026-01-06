@@ -1,7 +1,7 @@
 {
-  "name": "@holepunchto/repo-template",
+  "name": "@holepunchto/mininetswarm",
   "version": "0.0.1",
-  "description": "repo-template",
+  "description": "mininetswarm",
   "main": "index.js",
   "exports": {
     "./package": "./package.json",
@@ -28,12 +28,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/holepunchto/repo-template.git"
+    "url": "https://github.com/holepunchto/mininetswarm.git"
   },
   "author": "Holepunch Inc",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/holepunchto/repo-template/issues"
+    "url": "https://github.com/holepunchto/mininetswarm/issues"
   },
-  "homepage": "https://github.com/holepunchto/repo-template"
+  "homepage": "https://github.com/holepunchto/mininetswarm",
+  "dependencies": {
+    "hyperdht": "^6.28.0",
+    "hyperswarm": "^4.16.0",
+    "mininet": "^3.0.0",
+    "ready-resource": "^1.2.0",
+    "test-tmp": "^1.4.0"
+  }
 }
