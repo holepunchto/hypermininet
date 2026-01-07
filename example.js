@@ -1,8 +1,5 @@
 const Hypermininet = require('.')
 const Hyperswarm = require('hyperswarm')
-const Hypercore = require('hypercore')
-const path = require('path')
-const b4a = require('b4a')
 
 const hypermininet = new Hypermininet({
   debug: true,
@@ -15,7 +12,7 @@ const hypermininet = new Hypermininet({
 const topic = Buffer.alloc(32).fill('hello world')
 
 // Register functions BEFORE checking worker status
-const helloWorld = hypermininet.add(async ({ data, bootstrap, controller }) => {
+const helloWorld = hypermininet.add(async ({ data, bootstrap }) => {
   const swarm = new Hyperswarm({ bootstrap })
   console.log('running', data)
 
