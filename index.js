@@ -2,6 +2,7 @@ const ReadyResource = require('ready-resource')
 const Mininet = require('mininet')
 const sodium = require('sodium-universal')
 const b4a = require('b4a')
+const { spawnSync } = require('child_process')
 
 class Hypermininet extends ReadyResource {
   constructor(opts = {}) {
@@ -28,7 +29,6 @@ class Hypermininet extends ReadyResource {
       const node = DHT.bootstrapper(data.port, '127.0.0.1')
       await node.fullyBootstrapped().then(function () {
         const mn = require('mininet/host')
-        console.log('Bootstrapper running on port ' + node.address().port)
         mn.send('listening')
       })
     })
@@ -104,8 +104,8 @@ class Hypermininet extends ReadyResource {
     const linkOpts = this._networkConfig.link || {}
 
     this._switch = this._mn.createSwitch()
+    await this._fixOutput()
 
-    require('child_process').spawnSync('stty', ['sane'], { stdio: 'inherit' })
     this._log('Starting')
 
     for (let i = 0; i < hosts; i++) {
@@ -124,6 +124,12 @@ class Hypermininet extends ReadyResource {
         res()
       })
     })
+  }
+
+  async _fixOutput() {
+    // wait for python to break output
+    await new Promise((res) => setTimeout(res, 100))
+    spawnSync('stty', ['sane'], { stdio: 'inherit' })
   }
 
   async _close() {
