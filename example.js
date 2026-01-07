@@ -5,7 +5,7 @@ const hypermininet = new Hypermininet({
   debug: true,
   mininet: { clean: true },
   network: {
-    link: { bandwidth: 1, delay: '100ms', loss: 10, htb: true }
+    link: Hypermininet.NetworkParkingGarage
   }
 })
 

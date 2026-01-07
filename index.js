@@ -34,6 +34,62 @@ class Hypermininet extends ReadyResource {
     })
   }
 
+  static NetworkParkingGarage = {
+    bandwidth: 0.5, // 500 Kbps - edge of usability
+    delay: '300ms', // really struggling
+    loss: 25, // significant drops
+    jitter: '100ms',
+    htb: true
+  }
+
+  static NetworkCoffeeShop = {
+    bandwidth: 10,
+    delay: '30ms',
+    loss: 2,
+    jitter: '10ms',
+    htb: true
+  }
+
+  static NetworkSubway = {
+    bandwidth: 0.25,
+    delay: '500ms',
+    loss: 35,
+    jitter: '200ms',
+    htb: true
+  }
+
+  static NetworkAirplane = {
+    bandwidth: 2,
+    delay: '600ms', // satellite backhaul
+    loss: 5,
+    jitter: '50ms',
+    htb: true
+  }
+
+  static Network3GRural = {
+    bandwidth: 1,
+    delay: '150ms',
+    loss: 8,
+    jitter: '40ms',
+    htb: true
+  }
+
+  static NetworkOverloadedWifi = {
+    bandwidth: 5,
+    delay: '50ms',
+    loss: 10,
+    jitter: '80ms', // high jitter from contention
+    htb: true
+  }
+
+  static NetworkLAN = {
+    bandwidth: 100,
+    delay: '1ms',
+    loss: 0,
+    jitter: '0ms',
+    htb: true
+  }
+
   get hosts() {
     return this._hosts.slice(1)
   }
