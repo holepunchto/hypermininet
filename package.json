@@ -1,6 +1,6 @@
 {
   "name": "@holepunchto/hypermininet",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "hypermininet",
   "main": "index.js",
   "exports": {
