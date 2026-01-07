@@ -5,6 +5,7 @@ const hypermininet = new Hypermininet({
   debug: true,
   mininet: { clean: true },
   network: {
+    hosts: 5,
     link: Hypermininet.NetworkParkingGarage
   }
 })

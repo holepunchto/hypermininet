@@ -105,6 +105,7 @@ class Hypermininet extends ReadyResource {
 
     this._switch = this._mn.createSwitch()
 
+    require('child_process').spawnSync('stty', ['sane'], { stdio: 'inherit' })
     this._log('Starting')
 
     for (let i = 0; i < hosts; i++) {
@@ -188,10 +189,7 @@ class Hypermininet extends ReadyResource {
       const proc = host.spawn('node ' + args.join(' '), { stdio: 'inherit' })
 
       return new Promise((res, rej) => {
-        proc.once('spawn', () => {
-          console.log('spawned', host.ip)
-          res(proc)
-        })
+        proc.once('spawn', () => res(proc))
         proc.once('error', rej)
       })
     }
