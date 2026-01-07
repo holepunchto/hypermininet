@@ -44,7 +44,6 @@ class Hypermininet extends ReadyResource {
 
   async _open() {
     if (process.argv.includes('--hypermininet-run')) return
-
     const hosts = this._networkConfig.hosts || 10
     const linkOpts = this._networkConfig.link || {}
 
@@ -60,7 +59,10 @@ class Hypermininet extends ReadyResource {
 
     return new Promise((res) => {
       this._mn.start(async () => {
-        this._log(`Started`)
+        this._log(`Started mininet`)
+
+        await this._bootstrapRunner(this._hosts[0], this._bootstrapOpts)
+        this._log('Started bootstrap')
 
         res()
       })
@@ -81,10 +83,33 @@ class Hypermininet extends ReadyResource {
   }
 
   async boot(cb) {
-    this._log('Setting up Bootstrap')
-    const bootstrap = await this._bootstrapRunner(this._hosts[0], this._bootstrapOpts)
+    if (!Hypermininet.isMain()) return this._bootWorker()
 
+    await this.ready()
     return cb()
+  }
+
+  _bootWorker() {
+    const args = process.argv
+    const idx = args.indexOf('--hypermininet-run')
+
+    const id = args[idx + 1]
+    const optsSafe = args[idx + 2]
+    const opts = JSON.parse(Buffer.from(optsSafe, 'base64').toString())
+
+    process.nextTick(() => {
+      const cb = this._functions.get(id)
+
+      if (!cb) {
+        console.error('Unknown function id:', id)
+        process.exit(1)
+      }
+
+      const controller = require('mininet/host')
+      cb({ ...opts, controller })
+    })
+
+    return true
   }
 
   add(cb) {
@@ -116,29 +141,12 @@ class Hypermininet extends ReadyResource {
     }
   }
 
-  static isWorker(swarm) {
+  static isMain() {
     const args = process.argv
     const idx = args.indexOf('--hypermininet-run')
 
-    if (idx === -1) return false
-
-    const id = args[idx + 1]
-    const optsSafe = args[idx + 2]
-    const opts = JSON.parse(Buffer.from(optsSafe, 'base64').toString())
-
-    process.nextTick(() => {
-      const cb = swarm._functions.get(id)
-
-      if (!cb) {
-        console.error('Unknown function id:', id)
-        process.exit(1)
-      }
-
-      const controller = require('mininet/host')
-      cb({ ...opts, controller })
-    })
-
-    return true
+    if (idx === -1) return true
+    return false
   }
 
   _hash(source) {

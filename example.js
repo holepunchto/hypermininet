@@ -24,19 +24,11 @@ const helloWorld = hypermininet.add(async ({ data, bootstrap, controller }) => {
 })
 
 // Trigger worker
-if (!Hypermininet.isWorker(hypermininet)) {
-  main()
-}
-
-async function main() {
-  await hypermininet.ready()
-
-  await hypermininet.boot(async () => {
-    for (let i = 0; i < hypermininet.hosts.length; i++) {
-      const h = hypermininet.hosts[i]
-      await helloWorld(h, { hello: 'world', idx: i })
-    }
-  })
-}
+hypermininet.boot(async () => {
+  for (let i = 0; i < hypermininet.hosts.length; i++) {
+    const h = hypermininet.hosts[i]
+    await helloWorld(h, { hello: 'world', idx: i })
+  }
+})
 
 setTimeout(() => hypermininet.close(), 5000)
