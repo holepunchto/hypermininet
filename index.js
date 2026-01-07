@@ -1,32 +1,53 @@
 const ReadyResource = require('ready-resource')
 const Mininet = require('mininet')
-const tmp = require('test-tmp')
-const fs = require('fs/promises')
-const path = require('path')
+const sodium = require('sodium-universal')
+const b4a = require('b4a')
 
 class Hypermininet extends ReadyResource {
   constructor(opts = {}) {
     super()
 
-    this._mn = new Mininet(opts.mininet || {})
+    // configs
     this._networkConfig = opts.network || {}
     this._bootstrapOpts = opts.bootstrap || { port: 49737 }
-    this._switch = null
-    this._dir = null
     this._debug = opts.debug === true
-    this._functions = 0
+
+    // network
+    this._mn = new Mininet(opts.mininet || {})
+    this._switch = null
     this._hosts = []
+
+    // Functions by hash
+    this._functions = new Map()
+
+    // The entry file that spawned this process
+    this._entryFile = require.main?.filename
+
+    this._bootstrapRunner = this.add(async ({ data }) => {
+      const DHT = require('hyperdht')
+      const node = DHT.bootstrapper(data.port, '127.0.0.1')
+      await node.fullyBootstrapped().then(function () {
+        const mn = require('mininet/host')
+        console.log('Bootstrapper running on port ' + node.address().port)
+        mn.send('listening')
+      })
+    })
   }
 
   get hosts() {
     return this._hosts.slice(1)
   }
 
+  get bootstrap() {
+    return [{ host: this._hosts[0].ip, port: this._bootstrapOpts.port }]
+  }
+
   async _open() {
+    if (process.argv.includes('--hypermininet-run')) return
+
     const hosts = this._networkConfig.hosts || 10
     const linkOpts = this._networkConfig.link || {}
 
-    this._dir = await tmp()
     this._switch = this._mn.createSwitch()
 
     this._log('Starting')
@@ -49,8 +70,6 @@ class Hypermininet extends ReadyResource {
   async _close() {
     return new Promise((res) => {
       this._mn.stop(async () => {
-        await fs.rm(this._dir, { recursive: true })
-
         res()
       })
     })
@@ -61,48 +80,31 @@ class Hypermininet extends ReadyResource {
     console.log('[hypermininet]', ...msg)
   }
 
-  async _bootstrap() {
-    this._log('Setting up Bootstrap')
-
-    const run = this.add(async ({ data }) => {
-      const DHT = require('hyperdht')
-      const node = DHT.bootstrapper(data.port, '127.0.0.1')
-
-      await node.fullyBootstrapped().then(function () {
-        const mn = require('mininet/host')
-        console.log('Bootstrapper running on port ' + node.address().port)
-
-        mn.send('listening')
-      })
-    })
-
-    const bootstrap = await run(this._hosts[0], this._bootstrapOpts)
-
-    return new Promise((res) => {
-      bootstrap.once('message:listening', async () => {
-        this._log('Bootstrap ready')
-        res()
-      })
-    })
-  }
-
   async boot(cb) {
-    await this._bootstrap()
+    this._log('Setting up Bootstrap')
+    const bootstrap = await this._bootstrapRunner(this._hosts[0], this._bootstrapOpts)
 
     return cb()
   }
 
   add(cb) {
+    const source = cb.toString()
+    const id = this._hash(source)
+    this._functions.set(id, cb)
+
     return async (host, data) => {
-      const idx = this._functions++
       const opts = {
         data,
-        bootstrap: [{ host: this._hosts[0].ip, port: this._bootstrapOpts.port }]
+        bootstrap: this.bootstrap,
+        id
       }
-      const path = await this._saveCallback(idx, cb, opts)
 
-      this._log('spawning', idx, path)
-      const proc = host.spawn('node ' + path, { stdio: 'inherit' })
+      this._log('spawning', id, 'on', host.ip)
+
+      const optsSafe = Buffer.from(JSON.stringify(opts)).toString('base64')
+      const args = [this._entryFile, '--hypermininet-run', id, optsSafe]
+
+      const proc = host.spawn('node ' + args.join(' '), { stdio: 'inherit' })
 
       return new Promise((res, rej) => {
         proc.once('spawn', () => {
@@ -114,14 +116,36 @@ class Hypermininet extends ReadyResource {
     }
   }
 
-  async _saveCallback(name, cb, opts) {
-    const sourcePath = path.join(this._dir, name + '.js')
-    const source = `const controller = require('mininet/host'); (
-${cb.toString()}
-)({controller,...${JSON.stringify(opts)}})`
-    await fs.writeFile(sourcePath, source)
+  static isWorker(swarm) {
+    const args = process.argv
+    const idx = args.indexOf('--hypermininet-run')
 
-    return sourcePath
+    if (idx === -1) return false
+
+    const id = args[idx + 1]
+    const optsSafe = args[idx + 2]
+    const opts = JSON.parse(Buffer.from(optsSafe, 'base64').toString())
+
+    process.nextTick(() => {
+      const cb = swarm._functions.get(id)
+
+      if (!cb) {
+        console.error('Unknown function id:', id)
+        process.exit(1)
+      }
+
+      const controller = require('mininet/host')
+      cb({ ...opts, controller })
+    })
+
+    return true
+  }
+
+  _hash(source) {
+    const hash = b4a.allocUnsafe(32)
+    sodium.crypto_generichash(hash, b4a.from(source, 'utf-8'))
+
+    return hash.toString('hex')
   }
 }
 

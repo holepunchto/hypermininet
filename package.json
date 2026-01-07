@@ -20,7 +20,8 @@
     "hyperswarm": "^4.16.0",
     "lunte": "^1.2.0",
     "prettier": "^3.6.2",
-    "prettier-config-holepunch": "^2.0.0"
+    "prettier-config-holepunch": "^2.0.0",
+    "sodium-universal": "^5.0.1"
   },
   "scripts": {
     "format": "prettier . --write",
@@ -38,9 +39,9 @@
   },
   "homepage": "https://github.com/holepunchto/hypermininet",
   "dependencies": {
+    "b4a": "^1.7.3",
     "hyperdht": "^6.28.0",
     "mininet": "^3.0.0",
-    "ready-resource": "^1.2.0",
-    "test-tmp": "^1.4.0"
+    "ready-resource": "^1.2.0"
   }
 }

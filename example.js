@@ -1,54 +1,42 @@
 const Hypermininet = require('.')
+const Hyperswarm = require('hyperswarm')
+const Hypercore = require('hypercore')
+const path = require('path')
+const b4a = require('b4a')
 
-async function main() {
-  const hypermininet = new Hypermininet({
-    debug: true,
-    mininet: { clean: true },
-    network: {
-      link: {
-        bandwidth: 1, // use 1mbit link
-        delay: '100ms', // 100ms delay
-        loss: 10, // 10% package loss
-        htb: true // use htb
-      }
-    }
-  })
-  await hypermininet.ready()
-
-  async function close() {
-    await hypermininet.close()
+const hypermininet = new Hypermininet({
+  debug: true,
+  mininet: { clean: true },
+  network: {
+    link: { bandwidth: 1, delay: '100ms', loss: 10, htb: true }
   }
+})
 
-  process.on('SIGINT', close)
-  process.on('SIGTERM', close)
+const topic = Buffer.alloc(32).fill('hello world')
 
-  // Cleanup on uncaught errors
-  process.on('uncaughtException', (err) => {
-    console.error('Uncaught exception:', err)
-    close()
-  })
+// Register functions BEFORE checking worker status
+const helloWorld = hypermininet.add(async ({ data, bootstrap, controller }) => {
+  const swarm = new Hyperswarm({ bootstrap })
+  console.log('running', data)
 
-  const helloWorld = hypermininet.add(({ data, bootstrap, controller }) => {
-    const Hyperswarm = require('hyperswarm')
-    const _swarm = new Hyperswarm({ bootstrap })
-    console.log('running!', data)
+  const discovery = swarm.join(topic)
+  await discovery.flushed()
+})
 
-    controller.on('data', () => {
-      console.log('got data', data)
-    })
-  })
-
-  hypermininet.boot(async () => {
-    for (let i = 0; i < hypermininet.hosts.length; i++) {
-      const h = hypermininet.hosts[i]
-      const _proc = helloWorld(h, { hello: i })
-      console.log('from boot')
-    }
-  })
-
-  setTimeout(() => {
-    hypermininet.close()
-  }, 5000)
+// Trigger worker
+if (!Hypermininet.isWorker(hypermininet)) {
+  main()
 }
 
-main()
+async function main() {
+  await hypermininet.ready()
+
+  await hypermininet.boot(async () => {
+    for (let i = 0; i < hypermininet.hosts.length; i++) {
+      const h = hypermininet.hosts[i]
+      await helloWorld(h, { hello: 'world', idx: i })
+    }
+  })
+}
+
+setTimeout(() => hypermininet.close(), 5000)
