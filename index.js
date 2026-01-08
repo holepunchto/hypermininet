@@ -36,7 +36,7 @@ class Hypermininet extends ReadyResource {
 
   static NetworkParkingGarage = {
     bandwidth: 0.5, // 500 Kbps - edge of usability
-    // delay: '300ms', // really struggling
+    delay: '300ms', // really struggling
     loss: 25, // significant drops
     jitter: '100ms',
     htb: true
@@ -44,7 +44,7 @@ class Hypermininet extends ReadyResource {
 
   static NetworkCoffeeShop = {
     bandwidth: 10,
-    // delay: '30ms',
+    delay: '30ms',
     loss: 2,
     jitter: '10ms',
     htb: true
@@ -52,7 +52,7 @@ class Hypermininet extends ReadyResource {
 
   static NetworkSubway = {
     bandwidth: 0.25,
-    // delay: '500ms',
+    delay: '500ms',
     loss: 35,
     jitter: '200ms',
     htb: true
@@ -60,7 +60,7 @@ class Hypermininet extends ReadyResource {
 
   static NetworkAirplane = {
     bandwidth: 2,
-    // delay: '600ms', // satellite backhaul
+    delay: '600ms', // satellite backhaul
     loss: 5,
     jitter: '50ms',
     htb: true
@@ -68,7 +68,7 @@ class Hypermininet extends ReadyResource {
 
   static Network3GRural = {
     bandwidth: 1,
-    // delay: '150ms',
+    delay: '150ms',
     loss: 8,
     jitter: '40ms',
     htb: true
@@ -76,7 +76,7 @@ class Hypermininet extends ReadyResource {
 
   static NetworkOverloadedWifi = {
     bandwidth: 5,
-    // delay: '50ms',
+    delay: '50ms',
     loss: 10,
     jitter: '80ms', // high jitter from contention
     htb: true
@@ -84,7 +84,7 @@ class Hypermininet extends ReadyResource {
 
   static NetworkOK = {
     bandwidth: 10, // use 10mbit link
-    // delay: '100ms', // 100ms delay
+    delay: '100ms', // 100ms delay
     loss: 10, // 10% package loss
     htb: true // use htb
   }
