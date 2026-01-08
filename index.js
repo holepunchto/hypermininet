@@ -25,13 +25,12 @@ class Hypermininet extends ReadyResource {
     this._entryFile = require.main?.filename
 
     this._bootstrapRunner = this.add(async ({ data }) => {
-      const DHT = require('hyperdht')
-      const node = DHT.bootstrapper(data.port, '127.0.0.1')
-      await node.fullyBootstrapped().then(function () {
-        const mn = require('mininet/host')
-        console.log('[boostrap] ready')
-        mn.send('listening')
-      })
+      const createTestnet = require('hyperdht/testnet')
+      const mn = require('mininet/host')
+
+      const { bootstrap } = await createTestnet(3, { host: '10.0.0.1', port: data.port })
+      console.log('[boostrap] ready on', bootstrap)
+      mn.send('listening')
     })
   }
 
@@ -81,6 +80,13 @@ class Hypermininet extends ReadyResource {
     loss: 10,
     jitter: '80ms', // high jitter from contention
     htb: true
+  }
+
+  static NetworkOK = {
+    bandwidth: 10, // use 10mbit link
+    delay: '100ms', // 100ms delay
+    loss: 10, // 10% package loss
+    htb: true // use htb
   }
 
   static NetworkLAN = {
