@@ -7,7 +7,7 @@ const hypermininet = new Hypermininet({
   mininet: { clean: true },
   network: {
     hosts: 5,
-    link: Hypermininet.NetworkOK
+    link: Hypermininet.NetworkParkingGarage
   }
 })
 
@@ -34,6 +34,7 @@ const server = hypermininet.add(async ({ data, bootstrap, controller }) => {
 const client = hypermininet.add(async ({ data, bootstrap }) => {
   const node = new DHT({ bootstrap })
   await node.fullyBootstrapped()
+  await new Promise((r) => setTimeout(r, 500))
 
   console.log(`[host ${data.idx}]`, 'running', data.idx)
 
