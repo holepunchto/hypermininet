@@ -29,6 +29,7 @@ class Hypermininet extends ReadyResource {
       const node = DHT.bootstrapper(data.port, '127.0.0.1')
       await node.fullyBootstrapped().then(function () {
         const mn = require('mininet/host')
+        console.log('[boostrap] ready')
         mn.send('listening')
       })
     })
@@ -118,10 +119,10 @@ class Hypermininet extends ReadyResource {
       this._mn.start(async () => {
         this._log(`Started mininet`)
 
-        await this._bootstrapRunner(this._hosts[0], this._bootstrapOpts)
-        this._log('Started bootstrap')
-
-        res()
+        const proc = await this._bootstrapRunner(this._hosts[0], this._bootstrapOpts)
+        proc.on('message:listening', () => {
+          res()
+        })
       })
     })
   }
