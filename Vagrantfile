@@ -7,7 +7,7 @@ Vagrant.require_version ">=1.7.0"
 $setup_system = <<SCRIPT
 set -e
 apt-get -y update
-apt-get -y install -y build-essential openvswitch-switch mininet python3-pip
+apt-get -y install -y build-essential openvswitch-switch mininet python3-pip python-is-python3
 
 systemctl enable openvswitch-switch
 systemctl start openvswitch-switch
