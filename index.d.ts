@@ -8,14 +8,16 @@ declare module '@holepunchto/hypermininet' {
     delay?: string
     /** Packet loss percentage (0-100) */
     loss?: number
+    /** Jitter (e.g., '10ms') */
+    jitter?: string
     /** Use HTB qdisc */
     htb?: boolean
   }
 
   interface NetworkOptions {
-    /** Number of hosts to create. Default: 10 */
-    hosts?: number
-    /** Link configuration for host connections */
+    /** Number of hosts to create, or array of per-host link options. Default: 10 */
+    hosts?: number | LinkOptions[]
+    /** Default link configuration for host connections */
     link?: LinkOptions
   }
 
@@ -71,6 +73,8 @@ declare module '@holepunchto/hypermininet' {
     data: T
     /** Array of bootstrap nodes for HyperDHT/Hyperswarm */
     bootstrap: BootstrapNode[]
+    /** Unique identifier for this task */
+    id: string
     /** IPC controller from mininet/host */
     controller: HostController
   }
@@ -85,11 +89,14 @@ declare module '@holepunchto/hypermininet' {
 
   type TaskRunner<T = unknown> = (host: Host, data: T) => Promise<HostProcess>
 
-  declare class Hypermininet {
-    constructor(opts?: Hypermininet.Options)
+  class Hypermininet {
+    constructor(opts?: Options)
 
     /** Array of available hosts (excluding the bootstrap host) */
-    readonly hosts: Hypermininet.Host[]
+    readonly hosts: Host[]
+
+    /** Bootstrap nodes for HyperDHT/Hyperswarm connections */
+    readonly bootstrap: BootstrapNode[]
 
     /**
      * Initialize the Hypermininet
@@ -102,18 +109,65 @@ declare module '@holepunchto/hypermininet' {
      * @param callback Function that will be serialized and run on the host
      * @returns Async function that spawns the callback on a specific host
      */
-    add<T = unknown>(callback: Hypermininet.TaskCallback<T>): Hypermininet.TaskRunner<T>
+    add<T = unknown>(callback: TaskCallback<T>): TaskRunner<T>
 
     /**
      * Start the DHT bootstrapper and execute the callback
+     * When called from the main process, initializes the network and runs the callback.
+     * When called from a worker process, sets up the worker and returns true.
      * @param callback Function to execute once bootstrap is ready
+     * @returns Result of callback in main process, or true in worker process
      */
-    boot<T>(callback: () => T | Promise<T>): Promise<T>
+    boot<T>(callback: () => T | Promise<T>): Promise<T> | true
 
     /**
      * Stop all processes and clean up the virtual network
      */
     close(): Promise<void>
+
+    /**
+     * Check if this is the main process or a worker spawned by Hypermininet
+     * @returns true if main process, false if worker
+     */
+    static isMain(): boolean
+
+    // Network presets - simulated network conditions
+
+    /** Extremely poor connection: 100 Kbps, 500ms delay, 40% loss */
+    static readonly NetworkPotato: LinkOptions
+
+    /** Phone with dying battery: 50 Kbps, 800ms delay, 50% loss */
+    static readonly NetworkDyingBattery: LinkOptions
+
+    /** Underwater/extreme latency: 250 Kbps, 2000ms delay, 30% loss */
+    static readonly NetworkUnderwater: LinkOptions
+
+    /** Mars rover simulation: 500 Kbps, 10000ms delay, 10% loss */
+    static readonly NetworkMarsRover: LinkOptions
+
+    /** Parking garage/weak signal: 500 Kbps, 300ms delay, 25% loss */
+    static readonly NetworkParkingGarage: LinkOptions
+
+    /** Coffee shop WiFi: 10 Mbps, 30ms delay, 2% loss */
+    static readonly NetworkCoffeeShop: LinkOptions
+
+    /** Subway/metro: 250 Kbps, 500ms delay, 35% loss */
+    static readonly NetworkSubway: LinkOptions
+
+    /** Airplane WiFi: 2 Mbps, 600ms delay, 5% loss */
+    static readonly NetworkAirplane: LinkOptions
+
+    /** Rural 3G: 1 Mbps, 150ms delay, 8% loss */
+    static readonly Network3GRural: LinkOptions
+
+    /** Overloaded WiFi: 5 Mbps, 50ms delay, 10% loss, high jitter */
+    static readonly NetworkOverloadedWifi: LinkOptions
+
+    /** Decent connection with some issues: 10 Mbps, 100ms delay, 10% loss */
+    static readonly NetworkOK: LinkOptions
+
+    /** Local network: 1000 Mbps, no delay, no loss */
+    static readonly NetworkLAN: LinkOptions
   }
 
   export = Hypermininet

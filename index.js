@@ -34,6 +34,41 @@ class Hypermininet extends ReadyResource {
     })
   }
 
+  static NetworkPotato = {
+    bandwidth: 0.1,
+    delay: '500ms',
+    loss: 40,
+    jitter: '200ms',
+    htb: true
+  }
+
+  static NetworkDyingBattery = {
+    bandwidth: 0.05, // 50 Kbps - phone about to die
+    delay: '800ms',
+    loss: 50,
+    jitter: '300ms',
+    max_queue_size: 10000,
+    htb: true
+  }
+
+  static NetworkUnderwater = {
+    bandwidth: 0.25,
+    delay: '2000ms', // 4 second round trip
+    loss: 30,
+    jitter: '500ms',
+    max_queue_size: 10000,
+    htb: true
+  }
+
+  static NetworkMarsRover = {
+    bandwidth: 0.5,
+    delay: '10000ms', // 20 second round trip (not actual Mars, but painful)
+    loss: 10,
+    jitter: '1000ms',
+    max_queue_size: 10000,
+    htb: true
+  }
+
   static NetworkParkingGarage = {
     bandwidth: 0.5, // 500 Kbps - edge of usability
     delay: '300ms', // really struggling
