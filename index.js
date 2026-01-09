@@ -115,9 +115,15 @@ class Hypermininet extends ReadyResource {
 
     this._log('Starting')
 
+    if (!Array.isArray(hosts)) {
+      hosts = new Array(hosts).fill(linkOpts)
+    }
+
     for (let i = 0; i < hosts; i++) {
+      const opts = hosts[i]
       const host = this._mn.createHost()
-      host.link(this._switch, linkOpts)
+      host.link(this._switch, opts)
+      this._log('host', i, 'options:', opts)
       this._hosts.push(host)
     }
 
