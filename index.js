@@ -107,7 +107,7 @@ class Hypermininet extends ReadyResource {
 
   async _open() {
     if (process.argv.includes('--hypermininet-run')) return
-    const hosts = this._networkConfig.hosts || 10
+    let hosts = this._networkConfig.hosts || 10
     const linkOpts = this._networkConfig.link || {}
 
     this._switch = this._mn.createSwitch()
@@ -119,7 +119,7 @@ class Hypermininet extends ReadyResource {
       hosts = new Array(hosts).fill(linkOpts)
     }
 
-    for (let i = 0; i < hosts; i++) {
+    for (let i = 0; i < hosts.length; i++) {
       const opts = hosts[i]
       const host = this._mn.createHost()
       host.link(this._switch, opts)
