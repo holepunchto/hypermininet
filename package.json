@@ -1,7 +1,7 @@
 {
-  "name": "@holepunchto/hypermininet",
-  "version": "1.1.3",
-  "description": "hypermininet",
+  "name": "hypermininet",
+  "version": "1.0.0",
+  "description": "A high-level wrapper around around mininet for easy swarm testing",
   "main": "index.js",
   "exports": {
     "./package": "./package.json",

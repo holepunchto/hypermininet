@@ -52,6 +52,28 @@ await hypermininet.boot(async () => {
 await hypermininet.close()
 ```
 
+### Mixed network configs
+
+As well as creating multiple hosts with a single `link` config (controlling speed, delay etc.); this can also be controlled per host.
+
+The example will create 3 hosts, with 3 different preset configs used
+
+```js
+const Hypermininet = require('hypermininet')
+
+const hypermininet = new Hypermininet({
+  debug: true,
+  mininet: { clean: true },
+  network: {
+    hosts: [
+      Hypermininet.NetworkPotato,
+      Hypermininet.NetworkOK,
+      Hypermininet.Network3GRural
+    ]
+  }
+})
+```
+
 ## API
 
 ### `new Hypermininet(opts)`

@@ -47,7 +47,6 @@ class Hypermininet extends ReadyResource {
     delay: '800ms',
     loss: 50,
     jitter: '300ms',
-    max_queue_size: 10000,
     htb: true
   }
 
@@ -56,7 +55,6 @@ class Hypermininet extends ReadyResource {
     delay: '2000ms', // 4 second round trip
     loss: 30,
     jitter: '500ms',
-    max_queue_size: 10000,
     htb: true
   }
 
@@ -65,7 +63,6 @@ class Hypermininet extends ReadyResource {
     delay: '10000ms', // 20 second round trip (not actual Mars, but painful)
     loss: 10,
     jitter: '1000ms',
-    max_queue_size: 10000,
     htb: true
   }
 
@@ -126,7 +123,6 @@ class Hypermininet extends ReadyResource {
 
   static NetworkLAN = {
     bandwidth: 1000,
-    // delay: '1ms',
     loss: 0,
     jitter: '0ms',
     htb: true
