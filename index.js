@@ -22,7 +22,7 @@ class Hypermininet extends ReadyResource {
     this._functions = new Map()
 
     // The entry file that spawned this process
-    this._entryFile = require.main?.filename
+    this._entryFile = process.argv[1]
 
     this._bootstrapRunner = this.add(async ({ data }) => {
       const createTestnet = require('hyperdht/testnet')
