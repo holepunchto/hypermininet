@@ -1,8 +1,8 @@
 const ReadyResource = require('ready-resource')
-const Mininet = require('mininet')
 const sodium = require('sodium-universal')
 const b4a = require('b4a')
-const { spawnSync } = require('child_process')
+const { isBare } = require('which-runtime')
+const process = isBare ? require('bare-process') : require('process')
 
 class Hypermininet extends ReadyResource {
   constructor(opts = {}) {
@@ -14,7 +14,13 @@ class Hypermininet extends ReadyResource {
     this._debug = opts.debug === true
 
     // network
-    this._mn = new Mininet(opts.mininet || {})
+
+    if (Hypermininet.isMain()) {
+      console.log('isMain')
+      const Mininet = require('mininet')
+      this._mn = new Mininet(opts.mininet || {})
+    }
+
     this._switch = null
     this._hosts = []
 
@@ -31,7 +37,7 @@ class Hypermininet extends ReadyResource {
       const { bootstrap } = await createTestnet(3, { host: '10.0.0.1', port: data.port })
       console.log('[boostrap] ready on', bootstrap)
       mn.send('listening')
-    })
+    }, 'node')
   }
 
   static NetworkPotato = {
@@ -171,8 +177,10 @@ class Hypermininet extends ReadyResource {
   }
 
   async _fixOutput() {
+    if (!Hypermininet.isMain()) return
     // wait for python to break output
     await new Promise((res) => setTimeout(res, 100))
+    const { spawnSync } = require('child_process')
     spawnSync('stty', ['sane'], { stdio: 'inherit' })
   }
 
@@ -212,14 +220,14 @@ class Hypermininet extends ReadyResource {
         process.exit(1)
       }
 
-      const controller = require('mininet/host')
+      const controller = isBare ? undefined : require('mininet/host')
       cb({ ...opts, controller })
     })
 
     return true
   }
 
-  add(cb) {
+  add(cb, overrideExec) {
     const source = cb.toString()
     const id = this._hash(source)
     this._functions.set(id, cb)
@@ -236,7 +244,8 @@ class Hypermininet extends ReadyResource {
       const optsSafe = Buffer.from(JSON.stringify(opts)).toString('base64')
       const args = [this._entryFile, '--hypermininet-run', id, optsSafe]
 
-      const proc = host.spawn('node ' + args.join(' '), { stdio: 'inherit' })
+      const exec = overrideExec || this._networkConfig.exec || 'node'
+      const proc = host.spawn(exec + ' ' + args.join(' '), { stdio: 'inherit' })
 
       return new Promise((res, rej) => {
         proc.once('spawn', () => res(proc))
