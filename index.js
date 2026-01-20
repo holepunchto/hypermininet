@@ -16,7 +16,6 @@ class Hypermininet extends ReadyResource {
     // network
 
     if (Hypermininet.isMain()) {
-      console.log('isMain')
       const Mininet = require('mininet')
       this._mn = new Mininet(opts.mininet || {})
     }
