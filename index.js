@@ -219,7 +219,7 @@ class Hypermininet extends ReadyResource {
         process.exit(1)
       }
 
-      const controller = isBare ? undefined : require('mininet/host')
+      const controller = require('mininet/host')
       cb({ ...opts, controller })
     })
 
