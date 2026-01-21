@@ -52,6 +52,56 @@ await hypermininet.boot(async () => {
 await hypermininet.close()
 ```
 
+### Internet access
+
+Your switch (which the hosts `link` to) can be given internet access automatically.
+
+```js
+const Hypermininet = require('hypermininet')
+
+const hypermininet = new Hypermininet({
+  debug: true,
+  mininet: { clean: true, internet: true },
+  network: {
+    hosts: 10,
+    link: {
+      bandwidth: 1, // 1 Mbit link
+      delay: '100ms', // 100ms latency
+      loss: 10, // 10% packet loss
+      htb: true
+    }
+  }
+})
+```
+
+### Different runtime for hosts
+
+Hosts can be run with different runtimes by passing `exec: <your executable>`.
+This will be used when running JS on the hosts, so it must still be compatible.
+
+If using `bare` the `controller` will not be available, as `mininet/host` is not compatible with Bare.
+
+Note: The bootstrap host (host #1) always uses `node` for compatibility with `mininet`.
+
+```js
+const Hypermininet = require('hypermininet')
+
+const hypermininet = new Hypermininet({
+  debug: true,
+  mininet: { clean: true, internet: true },
+  network: {
+    exec: 'bare',
+    hosts: 10,
+    link: {
+      bandwidth: 1, // 1 Mbit link
+      delay: '100ms', // 100ms latency
+      loss: 10, // 10% packet loss
+      htb: true
+    }
+  }
+})
+```
+
 ### Mixed network configs
 
 As well as creating multiple hosts with a single `link` config (controlling speed, delay etc.); this can also be controlled per host.
