@@ -41,7 +41,7 @@
   "dependencies": {
     "b4a": "^1.7.3",
     "hyperdht": "^6.28.0",
-    "mininet": "^3.2.0",
+    "mininet": "^3.3.0",
     "ready-resource": "^1.2.0"
   }
 }
