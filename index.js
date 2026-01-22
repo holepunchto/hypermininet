@@ -34,7 +34,7 @@ class Hypermininet extends ReadyResource {
       const mn = require('mininet/host')
 
       const { bootstrap } = await createTestnet(3, { host: '10.0.0.1', port: data.port })
-      console.log('[boostrap] ready on', bootstrap)
+      console.log('ready on', bootstrap)
       mn.send('listening')
     }, 'node')
   }
@@ -142,14 +142,14 @@ class Hypermininet extends ReadyResource {
   }
 
   async _open() {
-    if (process.argv.includes('--hypermininet-run')) return
+    if (!Hypermininet.isMain()) return
     let hosts = this._networkConfig.hosts || 10
     const linkOpts = this._networkConfig.link || {}
 
     this._switch = this._mn.createSwitch()
     await this._fixOutput()
 
-    this._log('Starting')
+    console.log('Starting')
 
     if (!Array.isArray(hosts)) {
       hosts = new Array(hosts).fill(linkOpts)
@@ -159,13 +159,13 @@ class Hypermininet extends ReadyResource {
       const opts = hosts[i]
       const host = this._mn.createHost()
       host.link(this._switch, opts)
-      this._log('host', i, 'options:', opts)
+      console.log('host', i, 'options:', opts)
       this._hosts.push(host)
     }
 
     return new Promise((res) => {
       this._mn.start(async () => {
-        this._log(`Started mininet`)
+        console.log(`Started mininet`)
 
         const proc = await this._bootstrapRunner(this._hosts[0], this._bootstrapOpts)
         proc.on('message:listening', () => {
@@ -191,11 +191,6 @@ class Hypermininet extends ReadyResource {
     })
   }
 
-  _log(...msg) {
-    if (!this._debug) return
-    console.log('[hypermininet]', ...msg)
-  }
-
   async boot(cb) {
     if (!Hypermininet.isMain()) return this._bootWorker()
 
@@ -204,12 +199,7 @@ class Hypermininet extends ReadyResource {
   }
 
   _bootWorker() {
-    const args = process.argv
-    const idx = args.indexOf('--hypermininet-run')
-
-    const id = args[idx + 1]
-    const optsSafe = args[idx + 2]
-    const opts = JSON.parse(Buffer.from(optsSafe, 'base64').toString())
+    const { id, opts } = Hypermininet.Args()
 
     process.nextTick(() => {
       const cb = this._functions.get(id)
@@ -238,10 +228,10 @@ class Hypermininet extends ReadyResource {
         id
       }
 
-      this._log('spawning', id, 'on', host.ip)
+      console.log('spawning', id, 'on', host.ip)
 
       const optsSafe = Buffer.from(JSON.stringify(opts)).toString('base64')
-      const args = [this._entryFile, '--hypermininet-run', id, optsSafe]
+      const args = [this._entryFile, '--hypermininet-run', id, optsSafe, host.id]
 
       const exec = overrideExec || this._networkConfig.exec || 'node'
       const proc = host.spawn(exec + ' ' + args.join(' '), { stdio: 'inherit' })
@@ -254,11 +244,23 @@ class Hypermininet extends ReadyResource {
   }
 
   static isMain() {
+    const args = Hypermininet.Args()
+
+    if (!args) return true
+    return false
+  }
+
+  static Args() {
     const args = process.argv
     const idx = args.indexOf('--hypermininet-run')
+    if (idx === -1) return
 
-    if (idx === -1) return true
-    return false
+    const id = args[idx + 1]
+    const optsSafe = args[idx + 2]
+    const hostId = args[idx + 3]
+    const opts = JSON.parse(Buffer.from(optsSafe, 'base64').toString())
+
+    return { id, opts, hostId }
   }
 
   _hash(source) {
@@ -267,6 +269,15 @@ class Hypermininet extends ReadyResource {
 
     return hash.toString('hex')
   }
+}
+
+const log = console.log
+const args = Hypermininet.Args()
+if (args) {
+  const { hostId } = args
+  console.log = (...args) => log(hostId === 'h1' ? '[Bootstrap]' : `[Host ${hostId}]`, ...args)
+} else {
+  console.log = (...args) => log('[Hypermininet]', ...args)
 }
 
 module.exports = Hypermininet
