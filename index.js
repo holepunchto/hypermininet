@@ -33,7 +33,7 @@ class Hypermininet extends ReadyResource {
       const createTestnet = require('hyperdht/testnet')
       const mn = require('mininet/host')
 
-      const { bootstrap } = await createTestnet(3, { host: '10.0.0.1', port: data.port })
+      const { bootstrap } = await createTestnet(10, { host: '10.0.0.1', port: data.port })
       console.log('ready on', bootstrap)
       mn.send('listening')
     }, 'node')
