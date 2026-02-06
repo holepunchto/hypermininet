@@ -47,6 +47,14 @@ class Hypermininet extends ReadyResource {
     htb: true
   }
 
+  static NetworkDorset = {
+    bandwidth: 40,
+    delay: '500ms',
+    loss: 1,
+    jitter: '80ms',
+    htb: true
+  }
+
   static NetworkDyingBattery = {
     bandwidth: 0.05, // 50 Kbps - phone about to die
     delay: '800ms',
