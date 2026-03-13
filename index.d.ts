@@ -1,4 +1,4 @@
-declare module '@holepunchto/hypermininet' {
+declare module 'hypermininet' {
   import { EventEmitter } from 'events'
 
   interface LinkOptions {
