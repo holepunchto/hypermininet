@@ -115,11 +115,7 @@ const hypermininet = new Hypermininet({
   debug: true,
   mininet: { clean: true },
   network: {
-    hosts: [
-      Hypermininet.NetworkPotato,
-      Hypermininet.NetworkOK,
-      Hypermininet.Network3GRural
-    ]
+    hosts: [Hypermininet.NetworkPotato, Hypermininet.NetworkOK, Hypermininet.Network3GRural]
   }
 })
 ```
