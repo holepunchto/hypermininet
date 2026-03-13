@@ -1,6 +1,6 @@
 {
   "name": "hypermininet",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "A high-level wrapper around around mininet for easy swarm testing",
   "main": "index.js",
   "exports": {

@@ -109,7 +109,7 @@ declare module '@holepunchto/hypermininet' {
      * @param callback Function that will be serialized and run on the host
      * @returns Async function that spawns the callback on a specific host
      */
-    add<T = unknown>(callback: TaskCallback<T>): TaskRunner<T>
+    add<T = unknown>(callback: TaskCallback<T>, overrideExec?: string): TaskRunner<T>
 
     /**
      * Start the DHT bootstrapper and execute the callback
@@ -135,6 +135,9 @@ declare module '@holepunchto/hypermininet' {
 
     /** Extremely poor connection: 100 Kbps, 500ms delay, 40% loss */
     static readonly NetworkPotato: LinkOptions
+
+    /** Rural UK broadband: 40 Mbps, 500ms delay, 1% loss */
+    static readonly NetworkDorset: LinkOptions
 
     /** Phone with dying battery: 50 Kbps, 800ms delay, 50% loss */
     static readonly NetworkDyingBattery: LinkOptions
