@@ -3,6 +3,16 @@
   "version": "1.2.2",
   "description": "A high-level wrapper around around mininet for easy swarm testing",
   "main": "index.js",
+  "imports": {
+    "child_process": {
+      "bare": "bare-subprocess",
+      "default": "child_process"
+    },
+    "process": {
+      "bare": "bare-process",
+      "default": "process"
+    }
+  },
   "exports": {
     "./package": "./package.json",
     ".": {
@@ -17,11 +27,9 @@
   ],
   "devDependencies": {
     "brittle": "^3.19.0",
-    "hyperswarm": "^4.16.0",
     "lunte": "^1.2.0",
     "prettier": "^3.6.2",
-    "prettier-config-holepunch": "^2.0.0",
-    "sodium-universal": "^5.0.1"
+    "prettier-config-holepunch": "^2.0.0"
   },
   "scripts": {
     "format": "prettier . --write",
@@ -40,8 +48,11 @@
   "homepage": "https://github.com/holepunchto/hypermininet",
   "dependencies": {
     "b4a": "^1.7.3",
+    "bare-process": "^4.2.2",
+    "bare-subprocess": "^5.0.0",
     "hyperdht": "^6.28.0",
-    "mininet": "^3.3.0",
-    "ready-resource": "^1.2.0"
+    "mininet": "^3.4.0",
+    "ready-resource": "^1.2.0",
+    "sodium-universal": "^5.0.1"
   }
 }

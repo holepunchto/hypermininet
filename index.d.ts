@@ -19,6 +19,8 @@ declare module 'hypermininet' {
     hosts?: number | LinkOptions[]
     /** Default link configuration for host connections */
     link?: LinkOptions
+    /** Executable used for spawned host tasks. Default: the current process execPath */
+    exec?: string
   }
 
   interface BootstrapOptions {
@@ -49,7 +51,7 @@ declare module 'hypermininet' {
     /** Link the host to a switch */
     link(sw: unknown, opts?: LinkOptions): void
     /** Spawn a process on this host */
-    spawn(command: string, opts?: { stdio?: 'inherit' | 'pipe' }): HostProcess
+    spawn(command: string | string[], opts?: { stdio?: 'inherit' | 'pipe' }): HostProcess
   }
 
   interface HostProcess extends EventEmitter {

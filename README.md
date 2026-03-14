@@ -161,7 +161,7 @@ The callback receives an object with:
 
 ```js
 const runTask = hypermininet.add(({ data, bootstrap, controller }) => {
-  // This code runs in a separate Node.js process on the virtual host
+  // This code runs in a separate process on the virtual host
   controller.send('done')
 })
 
@@ -187,7 +187,7 @@ Stop all processes and clean up the virtual network.
 
 - Linux with Mininet installed
 - Root/sudo access (required by Mininet)
-- Node.js
+- Node.js or Bare
 
 ## License
 

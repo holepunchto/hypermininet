@@ -1,8 +1,7 @@
 const ReadyResource = require('ready-resource')
 const sodium = require('sodium-universal')
 const b4a = require('b4a')
-const { isBare } = require('which-runtime')
-const process = isBare ? require('bare-process') : require('process')
+const process = require('process')
 
 class Hypermininet extends ReadyResource {
   constructor(opts = {}) {
@@ -36,7 +35,7 @@ class Hypermininet extends ReadyResource {
       const { bootstrap } = await createTestnet(10, { host: '10.0.0.1', port: data.port })
       console.log('ready on', bootstrap)
       mn.send('listening')
-    }, 'node')
+    })
   }
 
   static NetworkPotato = {
@@ -241,8 +240,8 @@ class Hypermininet extends ReadyResource {
       const optsSafe = Buffer.from(JSON.stringify(opts)).toString('base64')
       const args = [this._entryFile, '--hypermininet-run', id, optsSafe, host.id]
 
-      const exec = overrideExec || this._networkConfig.exec || 'node'
-      const proc = host.spawn(exec + ' ' + args.join(' '), { stdio: 'inherit' })
+      const exec = overrideExec || this._networkConfig.exec || process.execPath
+      const proc = host.spawn([exec, ...args], { stdio: 'inherit' })
 
       return new Promise((res, rej) => {
         proc.once('spawn', () => res(proc))
@@ -284,8 +283,6 @@ const args = Hypermininet.Args()
 if (args) {
   const { hostId } = args
   console.log = (...args) => log(hostId === 'h1' ? '[Bootstrap]' : `[Host ${hostId}]`, ...args)
-} else {
-  console.log = (...args) => log('[Hypermininet]', ...args)
 }
 
 module.exports = Hypermininet
