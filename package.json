@@ -26,9 +26,9 @@
     "index.d.ts"
   ],
   "devDependencies": {
-    "brittle": "^3.19.0",
-    "lunte": "^1.2.0",
-    "prettier": "^3.6.2",
+    "brittle": "^3.19.1",
+    "lunte": "^1.6.0",
+    "prettier": "^3.8.1",
     "prettier-config-holepunch": "^2.0.0"
   },
   "scripts": {
@@ -47,10 +47,10 @@
   },
   "homepage": "https://github.com/holepunchto/hypermininet",
   "dependencies": {
-    "b4a": "^1.7.3",
-    "bare-process": "^4.2.2",
-    "bare-subprocess": "^5.0.0",
-    "hyperdht": "^6.28.0",
+    "b4a": "^1.8.0",
+    "bare-process": "^4.3.0",
+    "bare-subprocess": "^5.2.2",
+    "hyperdht": "^6.29.2",
     "mininet": "^3.4.0",
     "ready-resource": "^1.2.0",
     "sodium-universal": "^5.0.1"
