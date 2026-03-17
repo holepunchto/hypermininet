@@ -183,7 +183,7 @@ class Hypermininet extends ReadyResource {
   }
 
   async _fixOutput() {
-    if (!Hypermininet.isMain()) return
+    if (!Hypermininet.isMain() || !process.stdin.isTTY) return
     // wait for python to break output
     await new Promise((res) => setTimeout(res, 100))
     const { spawnSync } = require('child_process')
