@@ -13,20 +13,11 @@ class Hypermininet extends ReadyResource {
     this._debug = opts.debug === true
 
     // network
-
-    if (Hypermininet.isMain()) {
-      const Mininet = require('mininet')
-      this._mn = new Mininet(opts.mininet || {})
-    }
+    const Mininet = require('mininet')
+    this._mn = new Mininet(opts.mininet || {})
 
     this._switch = null
     this._hosts = []
-
-    // Functions by hash
-    this._functions = new Map()
-
-    // The entry file that spawned this process
-    this._entryFile = process.argv[1]
 
     this._bootstrapRunner = this.add(async ({ data }) => {
       const createTestnet = require('hyperdht/testnet')
@@ -149,7 +140,6 @@ class Hypermininet extends ReadyResource {
   }
 
   async _open() {
-    if (!Hypermininet.isMain()) return
     let hosts = this._networkConfig.hosts || 10
     const linkOpts = this._networkConfig.link || {}
 
@@ -183,7 +173,7 @@ class Hypermininet extends ReadyResource {
   }
 
   async _fixOutput() {
-    if (!Hypermininet.isMain() || !process.stdin.isTTY) return
+    if (!process.stdin.isTTY) return
     // wait for python to break output
     await new Promise((res) => setTimeout(res, 100))
     const { spawnSync } = require('child_process')
@@ -199,49 +189,29 @@ class Hypermininet extends ReadyResource {
   }
 
   async boot(cb) {
-    if (!Hypermininet.isMain()) return this._bootWorker()
-
     await this.ready()
     return cb()
-  }
-
-  _bootWorker() {
-    const { id, opts } = Hypermininet.Args()
-
-    process.nextTick(() => {
-      const cb = this._functions.get(id)
-
-      if (!cb) {
-        console.error('Unknown function id:', id)
-        process.exit(1)
-      }
-
-      const controller = require('mininet/host')
-      cb({ ...opts, controller })
-    })
-
-    return true
   }
 
   add(cb, overrideExec) {
     const source = cb.toString()
     const id = this._hash(source)
-    this._functions.set(id, cb)
 
     return async (host, data) => {
-      const opts = {
+      const payload = {
+        source,
         data,
         bootstrap: this.bootstrap,
-        id
+        id,
+        hostId: host.id
       }
 
       console.log('spawning', id, 'on', host.ip)
 
-      const optsSafe = Buffer.from(JSON.stringify(opts)).toString('base64')
-      const args = [this._entryFile, '--hypermininet-run', id, optsSafe, host.id]
-
+      const payloadSafe = Buffer.from(JSON.stringify(payload)).toString('base64')
       const exec = overrideExec || this._networkConfig.exec || process.execPath
-      const proc = host.spawn([exec, ...args], { stdio: 'inherit' })
+      const runner = require.resolve('./runner.js')
+      const proc = host.spawn([exec, runner, payloadSafe], { stdio: 'inherit' })
 
       return new Promise((res, rej) => {
         proc.once('spawn', () => res(proc))
@@ -251,23 +221,7 @@ class Hypermininet extends ReadyResource {
   }
 
   static isMain() {
-    const args = Hypermininet.Args()
-
-    if (!args) return true
-    return false
-  }
-
-  static Args() {
-    const args = process.argv
-    const idx = args.indexOf('--hypermininet-run')
-    if (idx === -1) return
-
-    const id = args[idx + 1]
-    const optsSafe = args[idx + 2]
-    const hostId = args[idx + 3]
-    const opts = JSON.parse(Buffer.from(optsSafe, 'base64').toString())
-
-    return { id, opts, hostId }
+    return true
   }
 
   _hash(source) {
@@ -276,13 +230,6 @@ class Hypermininet extends ReadyResource {
 
     return hash.toString('hex')
   }
-}
-
-const log = console.log
-const args = Hypermininet.Args()
-if (args) {
-  const { hostId } = args
-  console.log = (...args) => log(hostId === 'h1' ? '[Bootstrap]' : `[Host ${hostId}]`, ...args)
 }
 
 module.exports = Hypermininet

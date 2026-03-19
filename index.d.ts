@@ -115,12 +115,10 @@ declare module 'hypermininet' {
 
     /**
      * Start the DHT bootstrapper and execute the callback
-     * When called from the main process, initializes the network and runs the callback.
-     * When called from a worker process, sets up the worker and returns true.
+     * Initializes the network and runs the callback once ready.
      * @param callback Function to execute once bootstrap is ready
-     * @returns Result of callback in main process, or true in worker process
      */
-    boot<T>(callback: () => T | Promise<T>): Promise<T> | true
+    boot<T>(callback: () => T | Promise<T>): Promise<T>
 
     /**
      * Stop all processes and clean up the virtual network
@@ -128,10 +126,9 @@ declare module 'hypermininet' {
     close(): Promise<void>
 
     /**
-     * Check if this is the main process or a worker spawned by Hypermininet
-     * @returns true if main process, false if worker
+     * @deprecated No longer needed
      */
-    static isMain(): boolean
+    static isMain(): true
 
     // Network presets - simulated network conditions
 

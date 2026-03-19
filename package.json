@@ -23,7 +23,8 @@
   "files": [
     "package.json",
     "index.js",
-    "index.d.ts"
+    "index.d.ts",
+    "runner.js"
   ],
   "devDependencies": {
     "brittle": "^3.19.1",

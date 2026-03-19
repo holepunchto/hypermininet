@@ -1,17 +1,18 @@
 const Hypermininet = require('.')
-const b4a = require('b4a')
-const DHT = require('hyperdht')
 
 const hypermininet = new Hypermininet({
   debug: true,
   mininet: { clean: true },
   network: {
     hosts: 5,
-    link: Hypermininet.NetworkParkingGarage
+    link: Hypermininet.NetworkOK
   }
 })
 
 const server = hypermininet.add(async ({ data, bootstrap, controller }) => {
+  const DHT = require('hyperdht')
+  const b4a = require('b4a')
+
   const node = new DHT({ bootstrap })
   await node.fullyBootstrapped()
   console.log(`[host ${data.idx}]`, 'running with bootstrap', bootstrap)
@@ -32,6 +33,9 @@ const server = hypermininet.add(async ({ data, bootstrap, controller }) => {
 })
 
 const client = hypermininet.add(async ({ data, bootstrap }) => {
+  const DHT = require('hyperdht')
+  const b4a = require('b4a')
+
   const node = new DHT({ bootstrap })
   await node.fullyBootstrapped()
   await new Promise((r) => setTimeout(r, 500))

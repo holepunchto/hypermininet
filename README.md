@@ -79,10 +79,6 @@ const hypermininet = new Hypermininet({
 Hosts can be run with different runtimes by passing `exec: <your executable>`.
 This will be used when running JS on the hosts, so it must still be compatible.
 
-If using `bare` the `controller` will not be available, as `mininet/host` is not compatible with Bare.
-
-Note: The bootstrap host (host #1) always uses `node` for compatibility with `mininet`.
-
 ```js
 const Hypermininet = require('hypermininet')
 
