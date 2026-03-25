@@ -35,9 +35,13 @@ nvm install 24
 nvm use 24
 nvm alias default 24
 
+# Install Bare
+npm i -g bare
+
 # Verify Node installation
 node --version
 npm --version
+bare --version
 
 # Install poetry
 echo "Installing Poetry..."
@@ -54,6 +58,7 @@ echo "========================================="
 echo "Setup complete!"
 echo "Node: $(node --version)"
 echo "npm: $(npm --version)"
+echo "bare: $(bare --version)"
 echo "Poetry: $($HOME/.local/bin/poetry --version)"
 echo "========================================="
 echo ""
@@ -73,7 +78,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
          prl.update_guest_tools = true
        end
 
-       ubuntu.vm.synced_folder ".", "/vagrant", type: "rsync"
+       ubuntu.vm.synced_folder ".", "/vagrant"
 
        # System setup (as root)
        ubuntu.vm.provision "setup_system", type: "shell", inline: $setup_system
