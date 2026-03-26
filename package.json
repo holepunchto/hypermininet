@@ -8,6 +8,18 @@
       "bare": "bare-subprocess",
       "default": "child_process"
     },
+    "fs": {
+      "bare": "bare-fs",
+      "default": "fs"
+    },
+    "os": {
+      "bare": "bare-os",
+      "default": "os"
+    },
+    "path": {
+      "bare": "bare-path",
+      "default": "path"
+    },
     "events": {
       "bare": "bare-events",
       "default": "events"
@@ -54,6 +66,9 @@
   "homepage": "https://github.com/holepunchto/hypermininet",
   "dependencies": {
     "b4a": "^1.8.0",
+    "bare-fs": "^4.1.5",
+    "bare-os": "^3.6.1",
+    "bare-path": "^3.0.0",
     "bare-process": "^4.3.0",
     "bare-subprocess": "^5.2.2",
     "hyperdht": "^6.29.2",

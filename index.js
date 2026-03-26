@@ -2,6 +2,9 @@ const ReadyResource = require('ready-resource')
 const sodium = require('sodium-universal')
 const b4a = require('b4a')
 const process = require('process')
+const fs = require('fs')
+const path = require('path')
+const os = require('os')
 
 class Hypermininet extends ReadyResource {
   constructor(opts = {}) {
@@ -208,10 +211,12 @@ class Hypermininet extends ReadyResource {
 
       console.log('spawning', id, 'on', host.ip)
 
-      const payloadSafe = Buffer.from(JSON.stringify(payload)).toString('base64')
+      const payloadFile = path.join(os.tmpdir(), `mn-payload-${id}-${host.id}.json`)
+      fs.writeFileSync(payloadFile, JSON.stringify(payload))
+
       const exec = overrideExec || this._networkConfig.exec || process.execPath
       const runner = require.resolve('./runner.js')
-      const proc = host.spawn([exec, runner, payloadSafe], { stdio: 'inherit' })
+      const proc = host.spawn([exec, runner, payloadFile], { stdio: 'inherit' })
 
       return new Promise((res, rej) => {
         proc.once('spawn', () => res(proc))

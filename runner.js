@@ -1,6 +1,9 @@
 const process = require('process')
+const fs = require('fs')
 
-const payload = JSON.parse(Buffer.from(process.argv[2], 'base64').toString())
+const payloadFile = process.argv[2]
+const payload = JSON.parse(fs.readFileSync(payloadFile, 'utf-8'))
+fs.unlinkSync(payloadFile)
 const { source, data, bootstrap, id, hostId } = payload
 
 const log = console.log
