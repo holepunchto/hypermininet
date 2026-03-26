@@ -11,4 +11,7 @@ console.log = (...args) => log(hostId === 'h1' ? '[Bootstrap]' : `[Host ${hostId
 
 const fn = new Function('require', 'return ' + source)(require)
 const controller = require('mininet/host')
-fn({ data, bootstrap, id, controller })
+fn({ data, bootstrap, id, controller }).catch((err) => {
+  console.error(err)
+  process.exitCode = 1
+})
