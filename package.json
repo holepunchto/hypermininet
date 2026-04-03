@@ -71,6 +71,7 @@
     "bare-path": "^3.0.0",
     "bare-process": "^4.3.0",
     "bare-subprocess": "^5.2.2",
+    "corestore": "^7.9.2",
     "hyperdht": "^6.29.2",
     "mininet": "^3.4.0",
     "ready-resource": "^1.2.0",
