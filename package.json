@@ -8,18 +8,6 @@
       "bare": "bare-subprocess",
       "default": "child_process"
     },
-    "fs": {
-      "bare": "bare-fs",
-      "default": "fs"
-    },
-    "os": {
-      "bare": "bare-os",
-      "default": "os"
-    },
-    "path": {
-      "bare": "bare-path",
-      "default": "path"
-    },
     "events": {
       "bare": "bare-events",
       "default": "events"
@@ -74,6 +62,7 @@
     "corestore": "^7.9.2",
     "hyperdht": "^6.29.2",
     "mininet": "^3.4.0",
+    "protomux": "^3.10.1",
     "ready-resource": "^1.2.0",
     "sodium-universal": "^5.0.1"
   }
