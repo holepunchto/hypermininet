@@ -186,6 +186,7 @@ class Hypermininet extends ReadyResource {
   async _close() {
     return new Promise((res) => {
       this._mn.stop(async () => {
+        await this._store.close()
         res()
       })
     })
